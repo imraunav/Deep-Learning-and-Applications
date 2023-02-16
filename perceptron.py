@@ -7,7 +7,7 @@ import numpy as np
 '''
 class perceptron:
     def __init__(self, labels, n_features, max_epoch=1000, activation='threshold', tol= 1e-3):
-        np.random.seed(6)
+        # np.random.seed(100)
         self.max_epoch = max_epoch
         self.labels1 = labels[0]
         self.labels2 = labels[1]
@@ -48,17 +48,19 @@ class perceptron:
         for epoch in range(self.max_epoch):
             learning_rate = 1/(epoch+1) #constant learning rate
             err_count = 0
-            # see all class 1 data
+            # see all class 1 data(positive class)
             for sample in class1_data:
-                pred_label = self.predict(sample)
-                if pred_label != self.labels1:
+                pred_label, signal = self.predict_learn(sample)
+                if pred_label != 1:
+                    # delta = (1-signal)*(1-signal**2)                
                     self.w += learning_rate*sample
                     self.bias += learning_rate
                     err_count += 1
-            # see all class 2 data
+            # see all class 2 data(negetive class)
             for sample in class2_data:
-                pred_label = self.predict(sample)
-                if pred_label != self.labels2:
+                pred_label, signal = self.predict_learn(sample)
+                if pred_label != -1:
+                    # delta = (-1-signal)*(1-signal**2)                
                     self.w -= learning_rate*sample
                     self.bias -= learning_rate
                     err_count += 1
@@ -69,6 +71,15 @@ class perceptron:
                 break
 
         return err_epoch
+
+    def predict_learn(self, input):
+        # augmenting the input vector
+        activation_value = np.dot(self.w, input) + self.bias
+        signal = self.activation_fn(activation_value)
+        if signal > 0:
+            return 1, signal
+        elif signal <= 0:
+            return -1, signal 
 
     def predict(self, input):
         # augmenting the input vector
