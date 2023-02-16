@@ -3,23 +3,37 @@ import numpy as np
 ''' Thoughts while writing this:
 - Maybe trying to generalize the overall structure is making this more difficult. I should just try to do one task first.
 - Starting with simple threshold logic for the activation fn and avoiding all cleverness
+- Linearly Seperable data works with this perceptron 
 '''
 class perceptron:
-    def __init__(self, labels, n_features, max_epoch=1000):
+    def __init__(self, labels, n_features, max_epoch=1000, activation='threshold', tol= 1e-3):
+        np.random.seed(6)
         self.max_epoch = max_epoch
         self.labels1 = labels[0]
         self.labels2 = labels[1]
         self.w = np.random.randn(n_features)
         self.bias = np.random.randn(1)
+        self.tol = tol
+        self.activation = activation
         return None
 
     def activation_fn(self, activation_value):
-        # threshold logic
-        if activation_value > 0:
-            return 1
+        if self.activation == 'threshold':
+            # threshold logic
+            if activation_value > 0:
+                return 1
+            else:
+                return -1
+        elif self.activation == 'sigmoid':
+            # sigmoid(tan hyperbolic logic)
+            return np.tanh(activation_value)
+        elif self.activation == 'linear':
+            # linear logic
+            return activation_value
         else:
-            return -1
-    
+            # unknown activation function
+            return None
+
     def fit(self, class1_data, class2_data):
         '''
         This method will take the training data and return the mean squared error per epoch after training the weights of the perceptron
@@ -31,8 +45,8 @@ class perceptron:
         error per epoch
         '''
         err_epoch = []
-        for epoch in range(1, self.max_epoch+1, 1):
-            learning_rate = 1/epoch
+        for epoch in range(self.max_epoch):
+            learning_rate = 1/(epoch+1) #constant learning rate
             err_count = 0
             # see all class 1 data
             for sample in class1_data:
@@ -43,19 +57,18 @@ class perceptron:
                     err_count += 1
             # see all class 2 data
             for sample in class2_data:
-                err_count = 0
                 pred_label = self.predict(sample)
                 if pred_label != self.labels2:
                     self.w -= learning_rate*sample
                     self.bias -= learning_rate
                     err_count += 1
-            err_epoch.append(err_count)
+            error = err_count/(class1_data.shape[0] + class2_data.shape[0])
+            err_epoch.append(error)
             # check convergence
-            if err_count == 0:
+            if error <= self.tol:
                 break
 
         return err_epoch
-
 
     def predict(self, input):
         # augmenting the input vector
