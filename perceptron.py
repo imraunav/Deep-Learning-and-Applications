@@ -50,19 +50,21 @@ class perceptron:
             err_count = 0
             # see all class 1 data(positive class)
             for sample in class1_data:
-                pred_label, signal = self.predict_learn(sample)
-                if pred_label != 1:
-                    # delta = (1-signal)*(1-signal**2)                
-                    self.w += learning_rate*sample
-                    self.bias += learning_rate
+                signal = self.predict_learn(sample)
+                if signal < 0: # below the hyperplane; the points need to be above the plane
+                    delta = 1 # for threshold logic
+                    #  delta = (1-signal)*(1-(signal**2))                
+                    self.w += learning_rate*sample*delta
+                    self.bias += learning_rate*delta
                     err_count += 1
             # see all class 2 data(negetive class)
             for sample in class2_data:
-                pred_label, signal = self.predict_learn(sample)
-                if pred_label != -1:
-                    # delta = (-1-signal)*(1-signal**2)                
-                    self.w -= learning_rate*sample
-                    self.bias -= learning_rate
+                signal = self.predict_learn(sample)
+                if signal > 0: # above the hyperplane; the points need to be below the plane
+                    delta = 1 # for threshold logic
+                    # delta = (-1-signal)*(1-(signal**2))                
+                    self.w -= learning_rate*sample*delta
+                    self.bias -= learning_rate*delta
                     err_count += 1
             error = err_count/(class1_data.shape[0] + class2_data.shape[0])
             err_epoch.append(error)
@@ -73,16 +75,11 @@ class perceptron:
         return err_epoch
 
     def predict_learn(self, input):
-        # augmenting the input vector
         activation_value = np.dot(self.w, input) + self.bias
         signal = self.activation_fn(activation_value)
-        if signal > 0:
-            return 1, signal
-        elif signal <= 0:
-            return -1, signal 
+        return signal 
 
     def predict(self, input):
-        # augmenting the input vector
         activation_value = np.dot(self.w, input) + self.bias
         signal = self.activation_fn(activation_value)
         if signal > 0:
