@@ -5,6 +5,8 @@ import numpy as np
 - Starting with simple threshold logic for the activation fn and avoiding all cleverness
 - Linearly Seperable data works with this perceptron 
 - Having trouble with sigmoid activation function for learning the weights. The application of gradient descent algorithm with respect to the true labels may be confusing me.
+- Flipped the labels and this works within 1000 epochs, Perfectly!
+- Works for both logistic and tanh sigmoid.
 '''
 class perceptron:
     def __init__(self, labels, n_features, max_epoch=1000, activation='sigmoid', tol= 1e-3, learning_rate=0.25):
@@ -14,8 +16,6 @@ class perceptron:
         self.labels2 = labels[1]
         self.w = np.random.randn(n_features)
         self.bias = np.random.randn(1)
-        # self.w = np.array([1]*n_features, dtype=np.float64)
-        # self.bias = 1.0
         self.tol = tol
         self.activation = activation
         self.learning_rate = learning_rate
