@@ -9,7 +9,7 @@ class perceptron:
         self.activation = activation
         self.leaning_rate = learning_rate
         self.max_epoch = max_epoch
-        self.w = np.random.randn(n_features+1) # augmented weight vector
+        self.w = np.full(n_features+1, fill_value=1, dtype=float) # augmented weight vector
         return None
 
     def get_signal(self, input):
@@ -40,7 +40,7 @@ class perceptron:
         '''
         Logistic sigmoid function
         '''
-        return 1/(1-np.exp(-x))
+        return 1/(1+np.exp(-x))
     
     def predict_class(self, sample):
         '''
@@ -77,9 +77,10 @@ class perceptron:
                         np.full(shape=class2_data.shape[0], fill_value=labels[1])), axis=0)
         epoch_error = []
         for epoch in range(self.max_epoch):
+            all_signals = [] # collect all signals before the 
             err_collect = []
             for true_label, sample in zip(all_true_labels, all_data):
-                signal = self.get_signal(sample) # get perceptron signal for each class
+                signal = self.get_signal(sample)
                 err_collect.append(0.5*np.square(true_label-signal)) # collect the instantaneous error
                 self.grad_descent(true_label, signal, sample) # update weights
             
