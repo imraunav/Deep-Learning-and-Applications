@@ -9,7 +9,7 @@ import numpy as np
 - Works for both logistic and tanh sigmoid.
 '''
 class perceptron:
-    def __init__(self, labels, n_features, max_epoch=1000, activation='sigmoid', tol= 1e-3, learning_rate=0.25):
+    def __init__(self, n_features, labels=(1, 2), max_epoch=1000, activation='sigmoid', tol= 1e-3, learning_rate=0.25):
         # np.random.seed(100)
         self.max_epoch = max_epoch
         self.labels1 = labels[0]
@@ -27,15 +27,16 @@ class perceptron:
     def activation_fn(self, activation_value):
         if self.activation == 'sigmoid':
             # sigmoid(tan hyperbolic logic)
-            return np.tanh(activation_value)
-            # return self.logictic_sigmoid(activation_value)
+            # return np.tanh(activation_value)
+            return self.logictic_sigmoid(activation_value)
         elif self.activation == 'linear':
             # linear logic
             return activation_value
         
     def grad_descent(self, true_label, signal, sample):
         if self.activation == 'sigmoid':
-            delta = (true_label-signal)*(1-(signal**2))
+            # delta = (true_label-signal)*signal*(1-(signal))
+            delta = (true_label-signal)*signal*(1-signal**2)
         elif self.activation == 'linear':
             delta = (true_label-signal)
         self.w += self.learning_rate*delta*sample
@@ -57,6 +58,7 @@ class perceptron:
             learning_rate = self.learning_rate #constant learning rate
             err_collect = []
             # see all class 1 data(negetive class)
+            # true_label = 0
             true_label = -1
             for sample in class1_data:
                 signal = self.predict_signal(sample)
@@ -99,8 +101,10 @@ class perceptron:
         Class label of the predicted class
         '''
         signal = self.predict_signal(input)
+        # if signal < 0.5:
         if signal < 0:
             return self.labels1
+        # elif signal >= 0.5:
         elif signal >= 0:
             return self.labels2 
     def regress(self, input):
