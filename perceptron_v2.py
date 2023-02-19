@@ -1,5 +1,11 @@
 import numpy as np
-
+'''
+Observations
+- Compared to previous attempt, this perceptron works best due to two major changes:
+    * The initialisation is not random anymore. Instead this initialises with unit slope equivalent and unit intercept.
+    * This perceptron is more general and tweaking in the code need to be only in the main code, rather than this perticular class definition.
+    * Special care should be given to the 'learning_rate' value, especially for learning a non-linearly seperable data. There are chances of skipping narrow-and-deep valleys for larger learning rates, which will cause the error per epoch to even rise instead of falling to a suitable value. 
+'''
 class perceptron:
     def __init__(self, n_features, labels=(1, 2), tol=1e-3, activation='sigmoid', max_epoch=1000, learning_rate=0.25):
         self.n_features = n_features
@@ -75,24 +81,13 @@ class perceptron:
         all_data = np.concatenate((class1_data, class2_data), axis=0)
         all_true_labels = np.concatenate((np.full(shape=class1_data.shape[0], fill_value=labels[0]),
                         np.full(shape=class2_data.shape[0], fill_value=labels[1])), axis=0)
-        epoch_error = []
-        for epoch in range(self.max_epoch):
-            all_signals = [] # collect all signals before the 
-            err_collect = []
-            for true_label, sample in zip(all_true_labels, all_data):
-                signal = self.get_signal(sample)
-                err_collect.append(0.5*np.square(true_label-signal)) # collect the instantaneous error
-                self.grad_descent(true_label, signal, sample) # update weights
-            
-            avg_err = np.average(err_collect)
-            epoch_error.append(avg_err) # collect average error per epoch
-        return epoch_error
+        return self.fit(all_data, all_true_labels)
 
     def grad_descent(self, true_label, signal, sample):
         '''
         Update the weight vector using gradient descent method
         '''
-        if self.activation == 'threshold':
+        if self.activation == 'threshold' or self.activation == 'linear':
             delta = (true_label-signal)
         if self.activation == 'sigmoid' or self.activation == 'sigmoid_logistic':
             delta = (true_label-signal)*signal*(1-signal)
@@ -102,8 +97,47 @@ class perceptron:
         self.w += self.leaning_rate*delta*sample
         return None
 
-    def fit_regression(self):
-        pass
+    def fit(self, input, output):
+        '''
+        This method takes in input samples and their supposed output and learn the weight to fit the output.
+        
+        Parameters:
+        Input vectors and output labels
 
-    def predict_regress(self):
-        pass
+        Return
+        error per epoch
+        '''
+        epoch_error = []
+        for epoch in range(self.max_epoch):
+            err_collect = []
+            for true_label, sample in zip(output, input):
+                signal = self.get_signal(sample)
+                err_collect.append(0.5*np.square(true_label-signal)) # collect the instantaneous error
+                self.grad_descent(true_label, signal, sample) # update weights
+            avg_err = np.average(err_collect)
+            epoch_error.append(avg_err) # collect average error per epoch
+        return epoch_error
+
+    def fit_regression(self, data):
+        '''
+        This methods is to fit the model for regression.
+        
+        Parameters:
+        Data to regress
+
+        Return
+        Error per epoch during training
+        '''
+        input, output = data[:, :-1], data[:, -1:]
+        input = input.reshape((data.shape[0], self.n_features)) # just for the sake of uniformality
+        return self.fit(input, output)
+
+    def predict_regress(self, input):
+        '''
+        Parameters
+        Input vector
+        
+        Returns
+        Output measure
+        '''
+        return self.get_signal(input)
