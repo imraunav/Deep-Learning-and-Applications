@@ -7,3 +7,5 @@
 - [Regression of univariate data](regression_univariate.ipynb)
 - [Regression of bivariate data](regression_bivariate.ipynb)
 
+> **NOTE**
+> It is recommended to try to solve the assignments on your own. This codes maybe used as reference, but if indeed code is borowed, please cite this repo.
