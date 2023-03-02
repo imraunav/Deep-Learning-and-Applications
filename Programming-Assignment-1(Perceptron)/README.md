@@ -7,4 +7,4 @@
 - ![Regression of univariate data](regression_univariate.ipynb)
 - ![Regression of bivariate data](regression_bivariate.ipynb)
  -->
- - [[CS671_Assignment1_Details_13Feb2023.pdf|Assignment problem statements]]
+ - [[CS671_Assignment1_Details_13Feb2023.pdf| Assignment problem statements]]
