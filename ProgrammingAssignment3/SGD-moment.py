@@ -1,6 +1,6 @@
 from tensorflow import keras
 import pickle
-from tensorflow.keras.layers import Flatten, Dense, Input
+from tensorflow.keras.layers import Flatten, Dense, Input, Rescaling
 import os
 import numpy as np
 import cv2
@@ -76,132 +76,179 @@ initializer3 = keras.initializers.RandomNormal(stddev=0.01, seed=64)
 initializer4 = keras.initializers.RandomNormal(stddev=0.01, seed=128)
 
 
-model_1 = keras.Sequential([
-    Input((28,28), name='Input_layer'), # image data as input
-    Flatten(name='Vectorize'),
-    Dense(n_node[0], activation='sigmoid', name='Hidden_layer_1', kernel_initializer=initializer1, bias_initializer='zeros'),
-    Dense(n_node[1], activation='sigmoid', name='Hidden_layer_2', kernel_initializer=initializer2, bias_initializer='zeros'),
-    Dense(n_node[2], activation='sigmoid', name='Hidden_layer_3', kernel_initializer=initializer3, bias_initializer='zeros'),
-    Dense(10, activation='softmax', kernel_initializer=initializer4, bias_initializer='zeros', name='Output'),
-], name='FCNN_3layer')
-model_1.summary()
+# model_1 = keras.Sequential([
+#     Input((28,28), name='Input_layer'), # image data as input
+#     Flatten(name='Vectorize'),
+#     Dense(n_node[0], activation='sigmoid', name='Hidden_layer_1', kernel_initializer=initializer1, bias_initializer='zeros'),
+#     Dense(n_node[1], activation='sigmoid', name='Hidden_layer_2', kernel_initializer=initializer2, bias_initializer='zeros'),
+#     Dense(n_node[2], activation='sigmoid', name='Hidden_layer_3', kernel_initializer=initializer3, bias_initializer='zeros'),
+#     Dense(10, activation='softmax', kernel_initializer=initializer4, bias_initializer='zeros', name='Output'),
+# ], name='FCNN_3layer')
+# model_1.summary()
+
+# # optimizer
+# sgd = keras.optimizers.SGD(learning_rate=0.001, momentum=0.9, name="SGD")
+# earlystopping = keras.callbacks.EarlyStopping(monitor='loss',
+#                                               min_delta=1e-4,
+#                                               patience=1,
+#                                               verbose=1)
+
+# model_1.compile(optimizer=sgd,
+#               loss='sparse_categorical_crossentropy',
+#               metrics=['accuracy'])
+
+# # for layer in model_1.layers:
+# #     print(layer.weights)
+
+# history = model_1.fit(x=train_data, y=train_labels,
+#                     batch_size=1, epochs=100_000,
+#                     callbacks=[earlystopping],
+#                     verbose=1, shuffle=True,
+#                     validation_data=[val_data, val_labels])
+
+# # saving
+# model_1.save(filepath="SGD-moment_model1.h5", overwrite=True, include_optimizer=True)
+
+# with open('SGD-moment_history1.pkl', mode='wb') as f:
+#     pickle.dump(history.history, f, protocol=pickle.HIGHEST_PROTOCOL)
+# # plt.plot(history.history['loss'])
+# # plt.xlabel('Epochs')
+# # plt.ylabel('Adam') 
+# # plt.show()
+
+
+# # Three layer FCNN
+# # 600, 300, 200
+# n_node=[600, 300, 200]
+
+# model_2 = keras.Sequential([
+#     Input((28,28), name='Input_layer'), # image data as input
+#     Flatten(name='Vectorize'),
+#     Dense(n_node[0], activation='sigmoid', name='Hidden_layer_1', kernel_initializer=initializer1, bias_initializer='zeros'),
+#     Dense(n_node[1], activation='sigmoid', name='Hidden_layer_2', kernel_initializer=initializer2, bias_initializer='zeros'),
+#     Dense(n_node[2], activation='sigmoid', name='Hidden_layer_3', kernel_initializer=initializer3, bias_initializer='zeros'),
+#     Dense(10, activation='softmax', kernel_initializer=initializer4, bias_initializer='zeros', name='Output'),
+# ], name='FCNN_3layer')
+# model_2.summary()
+
+# # optimizer
+# sgd = keras.optimizers.SGD(learning_rate=0.001, momentum=0.9, name="SGD")
+# earlystopping = keras.callbacks.EarlyStopping(monitor='loss',
+#                                               min_delta=1e-4,
+#                                               patience=1,
+#                                               verbose=1)
+
+# model_2.compile(optimizer=sgd,
+#               loss='sparse_categorical_crossentropy',
+#               metrics=['accuracy'])
+
+# # for layer in model_1.layers:
+# #     print(layer.weights)
+
+# history = model_2.fit(x=train_data, y=train_labels,
+#                     batch_size=1, epochs=100_000,
+#                     callbacks=[earlystopping],
+#                     verbose=1, shuffle=True,
+#                     validation_data=[val_data, val_labels])
+
+# # saving
+# model_2.save(filepath="SGD-moment_model2.h5", overwrite=True, include_optimizer=True)
+
+# with open('SGD-moment_history2.pkl', mode='wb') as f:
+#     pickle.dump(history.history, f, protocol=pickle.HIGHEST_PROTOCOL)
+# # plt.plot(history.history['loss'])
+# # plt.xlabel('Epochs')
+# # plt.ylabel('Adam') 
+# # plt.show()
+
+
+# # Three layer FCNN
+# # 1000, 500, 50
+# n_node=[1000, 500, 50]
+
+# model_3 = keras.Sequential([
+#     Input((28,28), name='Input_layer'), # image data as input
+#     Flatten(name='Vectorize'),
+#     Dense(n_node[0], activation='sigmoid', name='Hidden_layer_1', kernel_initializer=initializer1, bias_initializer='zeros'),
+#     Dense(n_node[1], activation='sigmoid', name='Hidden_layer_2', kernel_initializer=initializer2, bias_initializer='zeros'),
+#     Dense(n_node[2], activation='sigmoid', name='Hidden_layer_3', kernel_initializer=initializer3, bias_initializer='zeros'),
+#     Dense(10, activation='softmax', kernel_initializer=initializer4, bias_initializer='zeros', name='Output'),
+# ], name='FCNN_3layer')
+# model_3.summary()
+
+# # optimizer
+# sgd = keras.optimizers.SGD(learning_rate=0.001, momentum=0.9, name="SGD")
+# earlystopping = keras.callbacks.EarlyStopping(monitor='loss',
+#                                               min_delta=1e-4,
+#                                               patience=1,
+#                                               verbose=1)
+
+# model_3.compile(optimizer=sgd,
+#               loss='sparse_categorical_crossentropy',
+#               metrics=['accuracy'])
+
+# # for layer in model_1.layers:
+# #     print(layer.weights)
+
+# history = model_3.fit(x=train_data, y=train_labels,
+#                     batch_size=1, epochs=100_000,
+#                     callbacks=[earlystopping],
+#                     verbose=1, shuffle=True,
+#                     validation_data=[val_data, val_labels])
+
+# # saving
+# model_3.save(filepath="SGD-moment_model3.h5", overwrite=True, include_optimizer=True)
+
+# with open('SGD-moment_history3.pkl', mode='wb') as f:
+#     pickle.dump(history.history, f, protocol=pickle.HIGHEST_PROTOCOL)
+# # plt.plot(history.history['loss'])
+# # plt.xlabel('Epochs')
+# # plt.ylabel('Adam') 
+# # plt.show()
+
+#Four layer 
+n_node=[256, 128, 64, 32]
+model = keras.Sequential(
+    [   
+        Input((28, 28), name="Input-layer"),
+        Rescaling(1/255.0, name="Rescaler"),
+        Flatten(name="Vectorize"),
+        Dense(n_node[0], activation='sigmoid', name='Hidden-layer-1'),
+        Dense(n_node[1], activation='sigmoid', name='Hidden-layer-2'),
+        Dense(n_node[2], activation='sigmoid', name='Hidden-layer-3'),
+        Dense(n_node[3], activation='sigmoid', name='Hidden-layer-4'),
+        Dense(10, activation='softmax', name='Output')
+    ]
+)
+
+model.summary()
 
 # optimizer
-sgd = keras.optimizers.SGD(learning_rate=0.001, momentum=0.9, name="SGD")
+sgd = keras.optimizers.SGD(learning_rate=0.001, momentum=0.9,name='SGD-moment')
 earlystopping = keras.callbacks.EarlyStopping(monitor='loss',
                                               min_delta=1e-4,
                                               patience=1,
                                               verbose=1)
 
-model_1.compile(optimizer=sgd,
+model.compile(optimizer=sgd,
               loss='sparse_categorical_crossentropy',
               metrics=['accuracy'])
 
 # for layer in model_1.layers:
 #     print(layer.weights)
 
-history = model_1.fit(x=train_data, y=train_labels,
+history = model.fit(x=train_data, y=train_labels,
                     batch_size=1, epochs=100_000,
                     callbacks=[earlystopping],
                     verbose=1, shuffle=True,
                     validation_data=[val_data, val_labels])
 
 # saving
-model_1.save(filepath="SGD-moment_model1.h5", overwrite=True, include_optimizer=True)
+model.save(filepath="SGD-moment_model4.h5", overwrite=True, include_optimizer=True)
 
-with open('SGD-moment_history1.pkl', mode='wb') as f:
+with open('SGD-moment_history4.pkl', mode='wb') as f:
     pickle.dump(history.history, f, protocol=pickle.HIGHEST_PROTOCOL)
-# plt.plot(history.history['loss'])
-# plt.xlabel('Epochs')
-# plt.ylabel('Adam') 
-# plt.show()
-
-
-# Three layer FCNN
-# 600, 300, 200
-n_node=[600, 300, 200]
-
-model_2 = keras.Sequential([
-    Input((28,28), name='Input_layer'), # image data as input
-    Flatten(name='Vectorize'),
-    Dense(n_node[0], activation='sigmoid', name='Hidden_layer_1', kernel_initializer=initializer1, bias_initializer='zeros'),
-    Dense(n_node[1], activation='sigmoid', name='Hidden_layer_2', kernel_initializer=initializer2, bias_initializer='zeros'),
-    Dense(n_node[2], activation='sigmoid', name='Hidden_layer_3', kernel_initializer=initializer3, bias_initializer='zeros'),
-    Dense(10, activation='softmax', kernel_initializer=initializer4, bias_initializer='zeros', name='Output'),
-], name='FCNN_3layer')
-model_2.summary()
-
-# optimizer
-sgd = keras.optimizers.SGD(learning_rate=0.001, momentum=0.9, name="SGD")
-earlystopping = keras.callbacks.EarlyStopping(monitor='loss',
-                                              min_delta=1e-4,
-                                              patience=1,
-                                              verbose=1)
-
-model_2.compile(optimizer=sgd,
-              loss='sparse_categorical_crossentropy',
-              metrics=['accuracy'])
-
-# for layer in model_1.layers:
-#     print(layer.weights)
-
-history = model_2.fit(x=train_data, y=train_labels,
-                    batch_size=1, epochs=100_000,
-                    callbacks=[earlystopping],
-                    verbose=1, shuffle=True,
-                    validation_data=[val_data, val_labels])
-
-# saving
-model_2.save(filepath="SGD-moment_model2.h5", overwrite=True, include_optimizer=True)
-
-with open('SGD-moment_history2.pkl', mode='wb') as f:
-    pickle.dump(history.history, f, protocol=pickle.HIGHEST_PROTOCOL)
-# plt.plot(history.history['loss'])
-# plt.xlabel('Epochs')
-# plt.ylabel('Adam') 
-# plt.show()
-
-
-# Three layer FCNN
-# 1000, 500, 50
-n_node=[1000, 500, 50]
-
-model_3 = keras.Sequential([
-    Input((28,28), name='Input_layer'), # image data as input
-    Flatten(name='Vectorize'),
-    Dense(n_node[0], activation='sigmoid', name='Hidden_layer_1', kernel_initializer=initializer1, bias_initializer='zeros'),
-    Dense(n_node[1], activation='sigmoid', name='Hidden_layer_2', kernel_initializer=initializer2, bias_initializer='zeros'),
-    Dense(n_node[2], activation='sigmoid', name='Hidden_layer_3', kernel_initializer=initializer3, bias_initializer='zeros'),
-    Dense(10, activation='softmax', kernel_initializer=initializer4, bias_initializer='zeros', name='Output'),
-], name='FCNN_3layer')
-model_3.summary()
-
-# optimizer
-sgd = keras.optimizers.SGD(learning_rate=0.001, momentum=0.9, name="SGD")
-earlystopping = keras.callbacks.EarlyStopping(monitor='loss',
-                                              min_delta=1e-4,
-                                              patience=1,
-                                              verbose=1)
-
-model_3.compile(optimizer=sgd,
-              loss='sparse_categorical_crossentropy',
-              metrics=['accuracy'])
-
-# for layer in model_1.layers:
-#     print(layer.weights)
-
-history = model_3.fit(x=train_data, y=train_labels,
-                    batch_size=1, epochs=100_000,
-                    callbacks=[earlystopping],
-                    verbose=1, shuffle=True,
-                    validation_data=[val_data, val_labels])
-
-# saving
-model_3.save(filepath="SGD-moment_model3.h5", overwrite=True, include_optimizer=True)
-
-with open('SGD-moment_history3.pkl', mode='wb') as f:
-    pickle.dump(history.history, f, protocol=pickle.HIGHEST_PROTOCOL)
-# plt.plot(history.history['loss'])
-# plt.xlabel('Epochs')
-# plt.ylabel('Adam') 
-# plt.show()
+plt.plot(history.history['loss'])
+plt.xlabel('Epochs')
+plt.ylabel('SGD-moment')
+plt.show()
