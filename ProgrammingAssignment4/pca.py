@@ -19,6 +19,107 @@ NOTES:
 - Not using my version of PCA. Instead using the implementation by Sklearn library.
 """
 
+def model_builder(n_components, reduced_train, train_labels):
+    #model 1
+    inputs = Input(shape=(n_components,), name="Input")
+    x = Dense(16, activation='tanh', name="Layer1")(inputs)
+    x = Dense(8, activation='tanh', name="Layer2")(x)
+    # x = Dense(128, activation='tanh', name="Layer3")(x)
+    # x = Dense(64, activation='tanh', name="Layer4")(x)
+    outputs = Dense(5, activation='softmax', name="Output")(x)
+    pcamodel1 = Model(inputs=inputs, outputs=outputs, name=f"Model-PCA{n_components}")
+    pcamodel1.summary()
+
+    adam_optimizer = Adam(learning_rate = 0.001)
+
+    pcamodel1.compile(optimizer=adam_optimizer,
+                        loss="sparse_categorical_crossentropy",
+                        metrics=['accuracy'])
+    earlystopping = EarlyStopping(monitor='loss',
+                                            min_delta=1e-4,
+                                            patience=1,
+                                            verbose=1)
+    history1 = pcamodel1.fit(x=reduced_train, y=train_labels,
+                            batch_size=32, epochs=100_000,
+                            callbacks=[earlystopping],
+                            verbose=1, shuffle=True,
+                            validation_split=0.0)
+    
+    # model 2
+    input = Input(shape=(n_components,), name="Input")
+    x = Dense(256, activation='tanh', name="Layer1")(inputs)
+    x = Dense(128, activation='tanh', name="Layer2")(x)
+    x = Dense(64, activation='tanh', name="Layer3")(x)
+    x = Dense(32, activation='tanh', name="Layer4")(x)
+    outputs = Dense(5, activation='softmax', name="Output")(x)
+    pcamodel2 = Model(inputs=inputs, outputs=outputs, name=f"Model-PCA{n_components}")
+    pcamodel2.summary()
+
+    adam_optimizer = Adam(learning_rate = 0.001)
+
+    pcamodel2.compile(optimizer=adam_optimizer,
+                        loss="sparse_categorical_crossentropy",
+                        metrics=['accuracy'])
+    earlystopping = EarlyStopping(monitor='loss',
+                                    min_delta=1e-4,
+                                    patience=1,
+                                    verbose=1)
+    history2 = pcamodel2.fit(x=reduced_train, y=train_labels,
+                            batch_size=32, epochs=100_000,
+                            callbacks=[earlystopping],
+                            verbose=1, shuffle=True,
+                            validation_split=0.0)
+    
+    # model 2
+    # inputs = Input(shape=(n_components,), name="Input")
+    # x = Dense(32, activation='tanh', name="Layer1")(inputs)
+    # x = Dense(16, activation='tanh', name="Layer2")(x)
+    # x = Dense(8, activation='tanh', name="Layer3")(x)
+    # # x = Dense(64, activation='tanh', name="Layer4")(x)
+    # outputs = Dense(5, activation='softmax', name="Output")(x)
+    # pcamodel2 = Model(inputs=inputs, outputs=outputs, name=f"Model-PCA{n_components}")
+    # pcamodel2.summary()
+
+    # adam_optimizer = Adam(learning_rate = 0.001)
+
+    # pcamodel2.compile(optimizer=adam_optimizer,
+    #                     loss="sparse_categorical_crossentropy",
+    #                     metrics=['accuracy'])
+    # earlystopping = EarlyStopping(monitor='loss',
+    #                                 min_delta=1e-4,
+    #                                 patience=1,
+    #                                 verbose=1)
+    # history2 = pcamodel2.fit(x=reduced_train, y=train_labels,
+    #                         batch_size=32, epochs=100_000,
+    #                         callbacks=[earlystopping],
+    #                         verbose=1, shuffle=True,
+    #                         validation_split=0.0)
+    
+    # #model 3
+    # inputs = Input(shape=(n_components,), name="Input")
+    # x = Dense(64, activation='tanh', name="Layer1")(inputs)
+    # x = Dense(32, activation='tanh', name="Layer2")(x)
+    # x = Dense(16, activation='tanh', name="Layer3")(x)
+    # x = Dense(8, activation='tanh', name="Layer4")(x)
+    # outputs = Dense(5, activation='softmax', name="Output")(x)
+    # pcamodel3 = Model(inputs=inputs, outputs=outputs, name=f"Model-PCA{n_components}")
+    # pcamodel3.summary()
+
+    # adam_optimizer = Adam(learning_rate = 0.001)
+
+    # pcamodel3.compile(optimizer=adam_optimizer,
+    #                     loss="sparse_categorical_crossentropy",
+    #                     metrics=['accuracy'])
+    # earlystopping = EarlyStopping(monitor='loss',
+    #                                 min_delta=1e-4,
+    #                                 patience=1,
+    #                                 verbose=1)
+    # history3 = pcamodel3.fit(x=reduced_train, y=train_labels,
+    #                         batch_size=32, epochs=100_000,
+    #                         callbacks=[earlystopping],
+    #                         verbose=1, shuffle=True,
+    #                         validation_split=0.0)
+    return pcamodel1, history1, pcamodel2, history2#, pcamodel3, history3 
 def main():    
     test_path='./ProgrammingAssignment4/Group_10/test'
     train_path='./ProgrammingAssignment4/Group_10/train'
@@ -69,44 +170,38 @@ def main():
         reduced_test = pca.transform(test_data)
         reduced_val = pca.transform(val_data)
 
-        # fcnn
-        inputs = Input(shape=(n_components,), name="Input")
-        x = Dense(512, activation='tanh', name="Layer1")(inputs)
-        x = Dense(256, activation='tanh', name="Layer2")(x)
-        x = Dense(128, activation='tanh', name="Layer3")(x)
-        # x = Dense(64, activation='tanh', name="Layer4")(x)
-        outputs = Dense(5, activation='softmax', name="Output")(x)
-        pcamodel = Model(inputs=inputs, outputs=outputs, name=f"Model-PCA{n_components}")
-        pcamodel.summary()
+        # fcnn models
+        pcamodel1, history1, pcamodel2, history2 = model_builder(n_components, reduced_train, train_labels)
+        
+        # Save pca object instance
+        with open(f"./ProgrammingAssignment4/pca_models/pca{n_components}.pkl", mode="wb") as f:
+            pickle.dump(pca, f, protocol=pickle.HIGHEST_PROTOCOL)
+        
+        # save history and model for architechture 1
+        with open(f'./ProgrammingAssignment4/pca_models/history1_pca{n_components}.pkl', mode='wb') as f:
+            pickle.dump(history1.history, f, protocol=pickle.HIGHEST_PROTOCOL)
+        pcamodel1.save(filepath=f"./ProgrammingAssignment4/pca_models/pcamodel1_{n_components}.h5", overwrite=True, include_optimizer=True)
 
-        adam_optimizer = Adam(learning_rate = 0.001)
+        # save history and model for architechture 2
+        with open(f'./ProgrammingAssignment4/pca_models/history2_pca{n_components}.pkl', mode='wb') as f:
+            pickle.dump(history2.history, f, protocol=pickle.HIGHEST_PROTOCOL)
+        pcamodel2.save(filepath=f"./ProgrammingAssignment4/pca_models/pcamodel2_{n_components}.h5", overwrite=True, include_optimizer=True)
+        
+        print("*"*70)
+        # with open(f'./ProgrammingAssignment4/pca_models/history3_pca{n_components}.pkl', mode='wb') as f:
+        #     pickle.dump(history3.history, f, protocol=pickle.HIGHEST_PROTOCOL)
+        # pcamodel3.save(filepath=f"./ProgrammingAssignment4/pca_models/pcamodel3_{n_components}.h5", overwrite=True, include_optimizer=True)
+        # print()
+        # _, acc_train = pcamodel.evaluate(reduced_train, train_labels)
+        # _, acc_test = pcamodel.evaluate(reduced_test, test_labels)
+        # _, acc_val = pcamodel.evaluate(reduced_val, test_labels)
 
-        pcamodel.compile(optimizer=adam_optimizer,
-                         loss="sparse_categorical_crossentropy",
-                         metrics=['accuracy'])
-        earlystopping = EarlyStopping(monitor='loss',
-                                              min_delta=1e-4,
-                                              patience=1,
-                                              verbose=1)
-        history = pcamodel.fit(x=reduced_train, y=train_labels,
-                               batch_size=32, epochs=100_000,
-                               callbacks=[earlystopping],
-                               verbose=1, shuffle=True,
-                               validation_split=0.0)
-        with open(f'./ProgrammingAssignment4/pca_models/history_pca{n_components}.pkl', mode='wb') as f:
-            pickle.dump(history.history, f, protocol=pickle.HIGHEST_PROTOCOL)
-        pcamodel.save(filepath=f"./ProgrammingAssignment4/pca_models/pcamodel_{n_components}.h5", overwrite=True, include_optimizer=True)
-        print()
-        _, acc_train = pcamodel.evaluate(reduced_train, train_labels)
-        _, acc_test = pcamodel.evaluate(reduced_test, test_labels)
-        _, acc_val = pcamodel.evaluate(reduced_val, test_labels)
-
-        print("Model evaluation")
-        print("="*60)
-        print(f"Training accuracy: {acc_train}")
-        print(f"Testing accuracy: {acc_test}")
-        print(f"Validation accuracy: {acc_val}")
-        print("*"*60)
+        # print("Model evaluation")
+        # print("="*60)
+        # print(f"Training accuracy: {acc_train}")
+        # print(f"Testing accuracy: {acc_test}")
+        # print(f"Validation accuracy: {acc_val}")
+        # print("*"*60)
 
         
 
