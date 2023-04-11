@@ -93,45 +93,6 @@ def noisify(train_data, test_data, val_data, noisy_factor):
     noisy_test = clip_by_value(noisy_test, clip_value_min=0, clip_value_max=1)
     noisy_val = clip_by_value(noisy_val, clip_value_min=0, clip_value_max=1)
     return noisy_train, noisy_test, noisy_val
-# def onehiddenlayer(n_components, train_data, test_data):
-#     inputs = Input(shape=(784,), name="Encoder-input")
-#     h = Dense(n_components, activation="tanh", name="Bottleneck-layer")(inputs)
-#     outputs = Dense(784, activation="linear", name="Decoder-output")(h)
-
-#     encoder = Model(inputs=inputs, outputs=h, name=f'Encoder{n_components}')
-#     decoder = Model(inputs=h, outputs=outputs, name=f'Decoder{n_components}')
-#     autoencoder = Model(inputs=inputs, outputs=outputs, name=f'Autoencoder{n_components}')
-#     adam_optimizer = Adam(learning_rate = 0.001)
-
-#     autoencoder.compile(optimizer=adam_optimizer,
-#                     loss="mse",
-#                     metrics=['accuracy'])
-#     earlystopping = EarlyStopping(monitor='loss',
-#                                 min_delta=1e-4,
-#                                 patience=10,
-#                                 verbose=1)
-#     autoencoder.summary()
-#     history = autoencoder.fit(x=train_data, y=train_data,
-#                             batch_size=32, epochs=100_000,
-#                             callbacks=[earlystopping],
-#                             verbose=1, shuffle=True,
-#                             validation_split=0.0)
-#     # plt.figure()
-#     # plt.subplot(1,2,1)
-#     # plt.title("Original")
-    
-#     # plt.imshow(test_data[874, :].reshape((28,28)))
-
-#     # plt.subplot(1,2,2)
-#     # plt.title("Autoencoder reconstruction")
-#     # plt.imshow(autoencoder.predict(test_data[874, :].reshape(1, -1)).reshape((28,28)))
-#     # plt.suptitle(f"{n_components} bottleneck")
-#     with open(f'./ProgrammingAssignment4/denoising-autoencoder_models/history_1layer_{n_components}.pkl', mode='wb') as f:
-#         pickle.dump(history.history, f, protocol=pickle.HIGHEST_PROTOCOL)
-#     encoder.save(filepath=f"./ProgrammingAssignment4/denoising-autoencoder_models/encoder_1layer_{n_components}.h5", overwrite=True, include_optimizer=True)
-#     autoencoder.save(filepath=f"./ProgrammingAssignment4/denoising-autoencoder_models/autoencoder_1layer_{n_components}.h5", overwrite=True, include_optimizer=True)
-
-#     return None
 
 
 def main():
