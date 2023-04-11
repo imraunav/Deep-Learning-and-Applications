@@ -23,7 +23,7 @@ def onehiddenlayer(n_components, train_data, test_data):
                     metrics=['accuracy'])
     earlystopping = EarlyStopping(monitor='loss',
                                 min_delta=1e-4,
-                                patience=1,
+                                patience=10,
                                 verbose=1)
     autoencoder.summary()
     history = autoencoder.fit(x=train_data, y=train_data,
@@ -65,7 +65,7 @@ def threehiddenlayer(n_components, train_data, test_data):
                     metrics=['accuracy'])
     earlystopping = EarlyStopping(monitor='loss',
                                 min_delta=1e-4,
-                                patience=5,
+                                patience=10,
                                 verbose=1)
     autoencoder.summary()
     history = autoencoder.fit(x=train_data, y=train_data,
