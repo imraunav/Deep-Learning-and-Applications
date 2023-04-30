@@ -17,9 +17,11 @@ def make_convnet():
 
     #conv block 1
     x = Conv2D(filters=8, kernel_size=(11,11), strides=4, padding="valid")(x)
+    x = MaxPooling2D(pool_size=(3, 3), strides=2, padding="valid")(x)
 
     #conv block 2
     x = Conv2D(filters=16, kernel_size=(5,5), strides=1, padding="valid")(x)
+    x = MaxPooling2D(pool_size=(3, 3), strides=2, padding="valid")(x)
 
     #conv block 3
     x = Conv2D(filters=32, kernel_size=(3,3), strides=1, padding="valid")(x)
