@@ -55,8 +55,8 @@ def main():
                         verbose=1, shuffle=True,
                         validation_split=0.0)
     
-    model.save(filepath="./ProgrammingAssignment5/models/architecture1.h5", overwrite=True, include_optimizer=True)
-    with open("./ProgrammingAssignment5/logs/hist_arch1.pkl", mode="wb") as f:
+    model.save(filepath="./ProgrammingAssignment5/models/vgg19_mod.h5", overwrite=True, include_optimizer=True)
+    with open("./ProgrammingAssignment5/logs/hist_vgg19_mod.pkl", mode="wb") as f:
         pickle.dump(history.history, f, protocol=pickle.HIGHEST_PROTOCOL)
 
 if __name__=="__main__":
