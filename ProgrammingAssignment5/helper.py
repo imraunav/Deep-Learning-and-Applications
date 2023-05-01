@@ -29,6 +29,13 @@ def relabel(labels):
         "helicopter" : 3,
         "laptop" : 4,
     }
+    # label_map ={
+    #     "bonsai" : 0,
+    #     "buddha" : 1,
+    #     "car_side" : 2,
+    #     "scorpion" : 3,
+    #     "starfish" : 4,
+    # }
     for i, l in enumerate(labels):
         labels[i] = label_map[l]
     return np.array(labels)
