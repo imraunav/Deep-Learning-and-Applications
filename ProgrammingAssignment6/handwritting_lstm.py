@@ -6,37 +6,47 @@ import pickle
 
 from preprocessing import process_handwriting, data_import_handwriting, StoppingCriteria
 
-def make_lstm():
+# def make_lstm():
+#     features=2
+#     seq_len = 200 # fixing for the sake of sanity
+#     input_seq = layers.Input((seq_len, features))
+#     x = layers.Masking(mask_value=-1)(input_seq)
+#     x = layers.LSTM(32, return_sequences=True, activation="tanh")(x)
+#     x = layers.Flatten()(x)
+#     outputs = layers.Dense(5, activation="Softmax")(x)
+
+#     model = Model(inputs=[input_seq], outputs=[outputs])
+#     return model
+
+# def make_lstm2():
+#     features=2
+#     seq_len = 200 # fixing for the sake of sanity
+#     input_seq = layers.Input((seq_len, features))
+#     x = layers.Masking(mask_value=-1)(input_seq)
+#     x = layers.LSTM(10, return_sequences=True, activation="tanh")(x)
+#     x = layers.LSTM(5, return_sequences=True, activation="tanh")(x)
+#     x = layers.Flatten()(x)
+#     outputs = layers.Dense(5, activation="Softmax")(x)
+
+#     model = Model(inputs=[input_seq], outputs=[outputs])
+#     return model
+def make_lstm3():
     features=2
     seq_len = 200 # fixing for the sake of sanity
     model = Sequential()
-    model.add(layers.Masking(mask_value=-1, input_shape=(seq_len, features)))
-    model.add(layers.LSTM(5, input_shape=(seq_len, features)))
-    model.add(layers.Dense(5, activation="Softmax"))
-    return model
-# def make_rnn2():
-#     features=2
-#     seq_len = 200 # fixing for the sake of sanity
-#     model = Sequential()
-#     model.add(layers.Masking(mask_value=-1, input_shape=(None, features)))
-#     model.add(layers.SimpleRNN(10, return_sequences=True))
-#     model.add(layers.SimpleRNN(5))
-#     model.add(layers.Dense(5, activation="Softmax"))
-#     return model
-# def make_rnn3():
-#     features=2
-#     seq_len = 200 # fixing for the sake of sanity
-#     model = Sequential()
-#     model.add(layers.Masking(mask_value=-1, input_shape=(None, features)))
-#     model.add(layers.SimpleRNN(10, input_shape=(None, features)))
-#     # model.add(layers.SimpleRNN(15))
-#     # model.add(layers.Dense(10, activation='relu'))
-#     # model.add(layers.Dropout(0.5))
-#     model.add(layers.Dense(5, activation="Softmax"))
-#     return model
+    input_seq = layers.Input((seq_len, 2))
+    x = layers.Masking(mask_value=-1)(input_seq)
+    x = layers.SimpleRNN(10, return_sequences=True)(x)
+    x = layers.SimpleRNN(15, return_sequences=True)(x)
+    x = layers.Flatten()(x)
+    x = layers.Dense(200, activation='relu')(x)
+    x = layers.Dropout(0.3)(x)
+    outputs = layers.Dense(5, activation="Softmax")(x)
+    return Model(inputs=[input_seq], outputs=[outputs])
+
 def main():
     tf.random.set_seed(32)
-    n = 1 # model number
+    n = 3 # model number
     data_path = "./ProgrammingAssignment6/CS671-DLA-Assignment4-Data-2022/Handwriting_Data"
     x_train, y_train, x_test, y_test = data_import_handwriting(data_path)
     # y_train = tf.keras.utils.to_categorical(y_train)
@@ -49,12 +59,12 @@ def main():
     mask_val = -1   # number unlikely to appear in normalized data
     x_train_padded = tf.keras.utils.pad_sequences(x_train, dtype=np.float64, padding="post", value=mask_val, maxlen=200)
     x_test_padded = tf.keras.utils.pad_sequences(x_test, dtype=np.float64, padding="post", value=mask_val, maxlen=200)
-    lstm = make_lstm()
-    # rnn = make_rnn2()
-    # rnn = make_rnn3()
+    # lstm = make_lstm()
+    # lstm = make_lstm2()
+    lstm = make_lstm3()
 
     lstm.summary()
-    adam_optimizer = optimizers.Adam(learning_rate=0.1)
+    adam_optimizer = optimizers.Adam()
     categorical_loss = losses.SparseCategoricalCrossentropy()
     lstm.compile(optimizer=adam_optimizer, loss=categorical_loss, metrics=["accuracy"])
     earlystopping = callbacks.EarlyStopping(monitor='loss',
