@@ -11,7 +11,7 @@ from preprocessing import process_handwriting, data_import_handwriting, Stopping
 #     seq_len = 200 # fixing for the sake of sanity
 #     input_seq = layers.Input((seq_len, features))
 #     x = layers.Masking(mask_value=-1)(input_seq)
-#     x = layers.LSTM(32, return_sequences=True, activation="tanh")(x)
+#     x = layers.LSTM(32, return_sequences=False, activation="tanh")(x)
 #     x = layers.Flatten()(x)
 #     outputs = layers.Dense(5, activation="Softmax")(x)
 
@@ -24,29 +24,33 @@ from preprocessing import process_handwriting, data_import_handwriting, Stopping
 #     input_seq = layers.Input((seq_len, features))
 #     x = layers.Masking(mask_value=-1)(input_seq)
 #     x = layers.LSTM(10, return_sequences=True, activation="tanh")(x)
-#     x = layers.LSTM(5, return_sequences=True, activation="tanh")(x)
+#     x = layers.LSTM(5, return_sequences=False, activation="tanh")(x)
 #     x = layers.Flatten()(x)
 #     outputs = layers.Dense(5, activation="Softmax")(x)
 
 #     model = Model(inputs=[input_seq], outputs=[outputs])
 #     return model
+
 def make_lstm3():
     features=2
     seq_len = 200 # fixing for the sake of sanity
-    model = Sequential()
-    input_seq = layers.Input((seq_len, 2))
-    x = layers.Masking(mask_value=-1)(input_seq)
-    x = layers.LSTM(10, return_sequences=True)(x)
-    x = layers.LSTM(15, return_sequences=True)(x)
-    x = layers.Flatten()(x)
+    inputs = Input((seq_len, features))
+    x = layers.Masking(mask_value=-1)(inputs)
+    x = layers.LSTM(64, return_sequences=True)(x)
+    x = layers.LSTM(32, return_state=False)(x)
+    # x = layers.Concatenate()(x)
     x = layers.Dense(200, activation='relu')(x)
-    x = layers.Dropout(0.3)(x)
+    x = layers.Dropout(0.6)(x)
     outputs = layers.Dense(5, activation="Softmax")(x)
-    return Model(inputs=[input_seq], outputs=[outputs])
-
+    model = Model(inputs=[inputs], outputs=[outputs])
+    return model
 def main():
     tf.random.set_seed(32)
     n = 3 # model number
+    # lstm = make_lstm()
+    # lstm = make_lstm2()
+    lstm = make_lstm3()
+
     data_path = "./ProgrammingAssignment6/CS671-DLA-Assignment4-Data-2022/Handwriting_Data"
     x_train, y_train, x_test, y_test = data_import_handwriting(data_path)
     # y_train = tf.keras.utils.to_categorical(y_train)
@@ -59,9 +63,6 @@ def main():
     mask_val = -1   # number unlikely to appear in normalized data
     x_train_padded = tf.keras.utils.pad_sequences(x_train, dtype=np.float64, padding="post", value=mask_val, maxlen=200)
     x_test_padded = tf.keras.utils.pad_sequences(x_test, dtype=np.float64, padding="post", value=mask_val, maxlen=200)
-    # lstm = make_lstm()
-    # lstm = make_lstm2()
-    lstm = make_lstm3()
 
     lstm.summary()
     adam_optimizer = optimizers.Adam()
