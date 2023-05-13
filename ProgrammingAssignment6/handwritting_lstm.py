@@ -6,30 +6,30 @@ import pickle
 
 from preprocessing import process_handwriting, data_import_handwriting, StoppingCriteria
 
-# def make_lstm():
-#     features=2
-#     seq_len = 200 # fixing for the sake of sanity
-#     input_seq = layers.Input((seq_len, features))
-#     x = layers.Masking(mask_value=-1)(input_seq)
-#     x = layers.LSTM(32, return_sequences=False, activation="tanh")(x)
-#     x = layers.Flatten()(x)
-#     outputs = layers.Dense(5, activation="Softmax")(x)
+def make_lstm():
+    features=2
+    seq_len = 200 # fixing for the sake of sanity
+    input_seq = layers.Input((seq_len, features))
+    x = layers.Masking(mask_value=-1)(input_seq)
+    x = layers.LSTM(32, return_sequences=False, activation="tanh")(x)
+    x = layers.Flatten()(x)
+    outputs = layers.Dense(5, activation="Softmax")(x)
 
-#     model = Model(inputs=[input_seq], outputs=[outputs])
-#     return model
+    model = Model(inputs=[input_seq], outputs=[outputs])
+    return model
 
-# def make_lstm2():
-#     features=2
-#     seq_len = 200 # fixing for the sake of sanity
-#     input_seq = layers.Input((seq_len, features))
-#     x = layers.Masking(mask_value=-1)(input_seq)
-#     x = layers.LSTM(10, return_sequences=True, activation="tanh")(x)
-#     x = layers.LSTM(5, return_sequences=False, activation="tanh")(x)
-#     x = layers.Flatten()(x)
-#     outputs = layers.Dense(5, activation="Softmax")(x)
+def make_lstm2():
+    features=2
+    seq_len = 200 # fixing for the sake of sanity
+    input_seq = layers.Input((seq_len, features))
+    x = layers.Masking(mask_value=-1)(input_seq)
+    x = layers.LSTM(10, return_sequences=True, activation="tanh")(x)
+    x = layers.LSTM(5, return_sequences=False, activation="tanh")(x)
+    x = layers.Flatten()(x)
+    outputs = layers.Dense(5, activation="Softmax")(x)
 
-#     model = Model(inputs=[input_seq], outputs=[outputs])
-#     return model
+    model = Model(inputs=[input_seq], outputs=[outputs])
+    return model
 
 def make_lstm3():
     features=2
